@@ -9,7 +9,6 @@ import { Logger, LoggerOptions } from 'pino'
 import QRCode from 'qrcode'
 import { Transform } from 'stream'
 import { fileURLToPath } from 'url'
-import * as ws from 'ws'
 import { z } from 'zod'
 
 import { RoomDetails } from '~/systems/room.ts'
@@ -66,7 +65,7 @@ const envToLogger: { [env in Env['NODE_ENV']]: LoggerOptions } = {
 }
 
 const server = Fastify({ logger: envToLogger[ENV.NODE_ENV] })
-server.log.child({ env: ENV }).info(`environment: %s`, ENV.NODE_ENV, ENV)
+server.log.child({ env: ENV }).info(`environment: %s`, ENV.NODE_ENV)
 server.register(fastifyWebsocket)
 server.register(fastifyCors, () => {
 	return (req: any, callback: any) => {
@@ -87,20 +86,20 @@ server.register(fastifyCors, () => {
 const PROJECT_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../dist')
 server.register(fastifyStatic, {
 	root: PROJECT_ROOT,
-	setHeaders: (res) => {
-		res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
-		res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+	setHeaders: (reply) => {
+		reply.header('Cross-Origin-Opener-Policy', 'same-origin')
+		reply.header('Cross-Origin-Embedder-Policy', 'require-corp')
 	},
 })
 
 //#region websocket routes
 server.register(async function () {
-	server.get('/api/networks/:networkId', { websocket: true }, (connection, request) => {
+	server.get('/api/networks/:networkId', { websocket: true }, (socket, request) => {
 		//@ts-expect-error
 		const networkId: string = request.params!.networkId
 		const log = request.log.child({ networkId })
 
-		SSN.handleNewConnection(connection.socket as unknown as ws.WebSocket, networkId, log as Logger)
+		SSN.handleNewConnection(socket, networkId, log as Logger)
 	})
 })
 //#endregion
