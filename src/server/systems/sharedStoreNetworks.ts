@@ -157,7 +157,7 @@ export function handleNewConnection(socket: ws.WebSocket, networkId: string, log
 	//#region retrieve network and create client
 	const network = networks.get(networkId)!
 	if (!network) {
-		log.info('network not found, closing newly connected client', networkId)
+		log.info('network not found, closing newly connected client')
 		socket.close()
 		return
 	}
@@ -180,7 +180,7 @@ export function handleNewConnection(socket: ws.WebSocket, networkId: string, log
 		})
 
 	log = client.log
-	log.info(`client connecting to network %s`, networkId, printNetwork(network))
+	log.info(printNetwork(network), `client connecting to network %s`, networkId)
 	//#endregion
 
 	//#region client message handling
@@ -270,7 +270,7 @@ export function setupSharedStoreSystem(log: FastifyBaseLogger) {
 	interval(1000).subscribe(() => {
 		for (const [networkId, network] of networks) {
 			if (network.timeoutAt && network.timeoutAt < Date.now()) {
-				log.info(`cleaning up network %s`, networkId, printNetwork(network))
+				log.info(printNetwork(network), `cleaning up network %s`, networkId)
 				network.dispose()
 				networks.delete(networkId)
 			}

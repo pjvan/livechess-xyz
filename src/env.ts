@@ -27,7 +27,7 @@ function _setupEnv() {
 	const env = createEnv({
 		clientPrefix: 'VITE_',
 		server: {
-			HOSTNAME: z.string().ip(),
+			HOSTNAME: z.union([z.ipv4(), z.ipv6()]),
 			EXTERNAL_ORIGIN: z.string().url(),
 			PORT: z
 				.string()

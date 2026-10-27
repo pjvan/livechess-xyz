@@ -326,7 +326,7 @@ export function initLeaderStore<
 	subscription.add(opsRejected$)
 	subscription.add(
 		event$.subscribe((event) => {
-			log.debug(event, 'emitting %s', event.type)
+			log.debug(event as BaseEvent, 'emitting %s', event.type)
 		})
 	)
 
@@ -447,7 +447,7 @@ export function initFollowerStore<
 	subscription.add(opsRejected$)
 	subscription.add(
 		event$.subscribe((e) => {
-			log.info(e, 'emitting %s', e.type)
+			log.info(e as BaseEvent, 'emitting %s', e.type)
 		})
 	)
 	subscription.add(
